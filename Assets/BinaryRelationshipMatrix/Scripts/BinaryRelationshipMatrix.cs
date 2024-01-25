@@ -9,6 +9,10 @@ public class BinaryRelationshipMatrix
 {
     private readonly int[] rowSet;
     private readonly int[] columnSet;
+
+    public int[] Rows => rowSet;
+
+    public int[] Columns => columnSet;
     
     private readonly Dictionary<(int, int), bool> matrix;
 
@@ -75,8 +79,14 @@ public class BinaryRelationshipMatrix
         
         if (rowSet.Where((value, index) => value != verifiableMatrix.rowSet[index]).Any())
             return false;
-        
-        return !columnSet.Where((value, index) => value != verifiableMatrix.columnSet[index]).Any();
+
+        if (columnSet.Where((value, index) => value != verifiableMatrix.columnSet[index]).Any())
+            return false;
+
+        if (verifiableMatrix.matrix.Count != matrix.Count)
+            return false;
+
+        return matrix.Keys.All(key => matrix[key] == verifiableMatrix.matrix[key]);
     }
     
     public static BinaryRelationshipMatrix CreateRandomBinaryMatrix(int minSize, int maxSize, int minSetValue, int maxSetValue)
@@ -102,7 +112,7 @@ public class BinaryRelationshipMatrix
         
         var randomValues = new HashSet<int> ();
         while (randomValues.Count != relationSize)
-            randomValues.Add(Random.Range(minSetValue, maxSetValue));
+            randomValues.Add(Random.Range(minSetValue, maxSetValue+1));
 
         return randomValues.OrderBy(value => value).ToArray();
     }
